@@ -12,9 +12,18 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background:url("\static\img\img_register.png");
+    
+    /* Tente esta opção (Caminho Relativo): */
+    /* ".." significa subir um nível, saindo de /css/ para /static/ */
+    background-image: url('../img/img_register.png');
+    
+    /* Se a de cima não funcionar, tente a absoluta com barra no início: */
+    /* background-image: url('/static/img/img_register.png'); */
+    
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat; /* Importante para não repetir */
+    background-color: grey; /
 }
 
 .container {

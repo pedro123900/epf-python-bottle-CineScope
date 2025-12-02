@@ -1,71 +1,76 @@
-from bottle import get, post, request, redirect, response, template
+from bottle import Bottle, request, redirect, response, template
 from models.user import User
 import hashlib
 
+# --- 1. CRIAMOS O OBJETO "user_routes" QUE O SISTEMA PROCURA ---
+user_routes = Bottle()
 
-# ROTA DE CADASTRO
-
-@get('/cadastro')
+# --- ROTA DE CADASTRO ---
+# Mudei de '/cadastro' para '/register' para bater com o seu HTML
+@user_routes.get('/register')
 def register_form():
-    #exibir a pagina html de cadastro
-    return template('register')
+    # Aponta para o arquivo correto na pasta views (index_register.tpl)
+    return template('views/index_register')
 
-
-@post('/cadastro')
+@user_routes.post('/register')
 def register_submit():
-    #pega os dados que foram mandados pelo formulario 
-    username = request.forms.get('username')
-    email = request.forms.get('email')
-    password = request.forms.get('password')
+    username = request.forms.get('username') # No HTML o name="username"
+    email = request.forms.get('email')       # No HTML o name="email"
+    password = request.forms.get('password') # No HTML o name="password"
 
-    #chama o model para tentar salvar no banco 
+    # Tenta criar o usuário
     sucesso = User.create(username, email, password)
 
     if sucesso:
-        #se deu certo manda pro login
         return redirect('/login')
     else:
-        #se deu erro avisa na tela (email ja usado)
-        return template('register', error = "Email ja cadastrado!")
-    
-    
-#ROTA DE LOGIN
+        # Retorna erro usando o template certo
+        return template('views/index_register', error="Email já cadastrado!")
 
+# --- ROTA DE LOGIN ---
 
-@get('/login')
+@user_routes.get('/login')
 def login_form():
-    #se o usuario ja estiver logado joga ele pra home direto
+    # Verifica cookie
     if request.get_cookie("user_id", secret="minha_chave_secreta"):
         return redirect('/')
-    return template('login')
+    
+    # Chama o template certo (index_login.tpl)
+    return template('views/index_login')
 
-@post('/login')
+@user_routes.post('/login')
 def login_submit():
     email = request.forms.get('email')
     password = request.forms.get('password')
 
-    #busca o usuario no banco pelo email
     user = User.find_by_email(email)
 
     if user:
-        #verifica a senha
-        #pega a senha que ele digitou AGORA, decodifica e compara com a do banco
+        # Criptografa a senha recebida para comparar
         hashed_input = hashlib.sha256(password.encode()).hexdigest()
 
         if hashed_input == user['password_hash']:
-            #senha correta
-            #cria um cookie pro navegador lembrar dele
-            response.set_cookie("user_id", str(user['id']), secret= "minha_chave_secreta")
-            return redirect('/') # manda pra home
+            # Senha correta: cria o cookie
+            response.set_cookie("user_id", str(user['id']), secret="minha_chave_secreta")
+            return redirect('/') 
         
-    #se ta aqui eh pq errou email ou senha
-    return template('login', error = "Email ou senha incorretos.")
+    # Se falhar
+    return template('views/index_login', error="Email ou senha incorretos.")
 
-#ROTA DE LOGOUT
+# --- ROTA DE LOGOUT ---
 
-@get('/logout')
+@user_routes.get('/logout')
 def logout():
-    #apaga o cookie do usuario
     response.delete_cookie("user_id")
     return redirect('/login')
-        
+
+# ... (código anterior do login/logout) ...
+
+# --- ROTA DA HOME (Página Inicial) ---
+@user_routes.route('/', method='GET')
+def home():
+    # Verifica se está logado
+    if request.get_cookie("user_id", secret="minha_chave_secreta"):
+        return "<h1>Bem-vindo ao CineScope! Você está logado. <a href='/logout'>Sair</a></h1>"
+    else:
+        return "<h1>Olá visitante! <a href='/login'>Fazer Login</a> ou <a href='/register'>Criar Conta</a></h1>"

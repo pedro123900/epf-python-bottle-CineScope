@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="\epf-python-bottle-CineScope\static\css\style_register.css">
+    <link rel="stylesheet" href="/static/css/style_register.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="\epf-python-bottle-CineScope\static\img\icone_cinescope.png">
+    <link rel="stylesheet" href="epf-python-bottle-CineScope/static/img/img_register.png">
 
     <title>Registro CineScope</title>
 </head>
@@ -15,7 +16,7 @@
     <main class="container">
         <form>
             <h1>
-                <img src="\static\img\img_register.png" alt="Logo CineScope" class="icone-img">
+                <img src="\static\img\icone_cinescope.png" alt="Logo CineScope" class="icone-img">
                 Registro CineScope</h1>
             <div class="input-box">
                 <input placeholder="Usuário" type="text">
@@ -40,7 +41,7 @@
 
             <div class="login-link">
                 <!--Configurar rota para a pagina de login!!-->
-                <p>Já possui uma conta?</p><a href="">Clique aqui!</a>
+                <p>Já possui uma conta?</p><a href="/login">Clique aqui!</a>
             </div>
         </form>
     </main>
