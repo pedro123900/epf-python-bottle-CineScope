@@ -1,17 +1,19 @@
-from bottle import get, post, request, redirect, response, template
+from bottle import Bottle, request, redirect, response, template, static_file
 from models.user import User
 import hashlib
 
+# definindo a app do bottle para as rotas de usuario
+user_routes = Bottle()
 
 # ROTA DE CADASTRO
 
-@get('/cadastro')
+@user_routes.get('/cadastro')
 def register_form():
     #exibir a pagina html de cadastro
-    return template('register')
+    return template('index_register')
 
 
-@post('/cadastro')
+@user_routes.post('/cadastro')
 def register_submit():
     #pega os dados que foram mandados pelo formulario 
     username = request.forms.get('username')
@@ -26,20 +28,20 @@ def register_submit():
         return redirect('/login')
     else:
         #se deu erro avisa na tela (email ja usado)
-        return template('register', error = "Email ja cadastrado!")
+        return template('index_register', error = "Email ja cadastrado!")
     
     
 #ROTA DE LOGIN
 
 
-@get('/login')
+@user_routes.get('/login')
 def login_form():
     #se o usuario ja estiver logado joga ele pra home direto
     if request.get_cookie("user_id", secret="minha_chave_secreta"):
         return redirect('/')
-    return template('login')
+    return template('index_login')
 
-@post('/login')
+@user_routes.post('/login')
 def login_submit():
     email = request.forms.get('email')
     password = request.forms.get('password')
@@ -59,13 +61,18 @@ def login_submit():
             return redirect('/') # manda pra home
         
     #se ta aqui eh pq errou email ou senha
-    return template('login', error = "Email ou senha incorretos.")
+    return template('index_login', error = "Email ou senha incorretos.")
 
 #ROTA DE LOGOUT
 
-@get('/logout')
+@user_routes.get('/logout')
 def logout():
     #apaga o cookie do usuario
     response.delete_cookie("user_id")
-    return redirect('/login')
-        
+    return redirect('/login')      
+
+
+#rota para arquivos estaticos (CSS, imagens etc)
+@user_routes.get('/static/<filepath:path>')
+def serve_static(filepath):
+    return static_file(filepath, root='./static')
