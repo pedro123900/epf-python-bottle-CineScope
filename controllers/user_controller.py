@@ -1,54 +1,71 @@
-from bottle import Bottle, request
-from .base_controller import BaseController
-from services.user_service import UserService
-
-class UserController(BaseController):
-    def __init__(self, app):
-        super().__init__(app)
-
-        self.setup_routes()
-        self.user_service = UserService()
+from bottle import get, post, request, redirect, response, template
+from models.user import User
+import hashlib
 
 
-    # Rotas User
-    def setup_routes(self):
-        self.app.route('/users', method='GET', callback=self.list_users)
-        self.app.route('/users/add', method=['GET', 'POST'], callback=self.add_user)
-        self.app.route('/users/edit/<user_id:int>', method=['GET', 'POST'], callback=self.edit_user)
-        self.app.route('/users/delete/<user_id:int>', method='POST', callback=self.delete_user)
+# ROTA DE CADASTRO
+
+@get('/cadastro')
+def register_form():
+    #exibir a pagina html de cadastro
+    return template('register')
 
 
-    def list_users(self):
-        users = self.user_service.get_all()
-        return self.render('users', users=users)
+@post('/cadastro')
+def register_submit():
+    #pega os dados que foram mandados pelo formulario 
+    username = request.forms.get('username')
+    email = request.forms.get('email')
+    password = request.forms.get('password')
+
+    #chama o model para tentar salvar no banco 
+    sucesso = User.create(username, email, password)
+
+    if sucesso:
+        #se deu certo manda pro login
+        return redirect('/login')
+    else:
+        #se deu erro avisa na tela (email ja usado)
+        return template('register', error = "Email ja cadastrado!")
+    
+    
+#ROTA DE LOGIN
 
 
-    def add_user(self):
-        if request.method == 'GET':
-            return self.render('user_form', user=None, action="/users/add")
-        else:
-            # POST - salvar usuário
-            self.user_service.save()
-            self.redirect('/users')
+@get('/login')
+def login_form():
+    #se o usuario ja estiver logado joga ele pra home direto
+    if request.get_cookie("user_id", secret="minha_chave_secreta"):
+        return redirect('/')
+    return template('login')
 
+@post('/login')
+def login_submit():
+    email = request.forms.get('email')
+    password = request.forms.get('password')
 
-    def edit_user(self, user_id):
-        user = self.user_service.get_by_id(user_id)
-        if not user:
-            return "Usuário não encontrado"
+    #busca o usuario no banco pelo email
+    user = User.find_by_email(email)
 
-        if request.method == 'GET':
-            return self.render('user_form', user=user, action=f"/users/edit/{user_id}")
-        else:
-            # POST - salvar edição
-            self.user_service.edit_user(user)
-            self.redirect('/users')
+    if user:
+        #verifica a senha
+        #pega a senha que ele digitou AGORA, decodifica e compara com a do banco
+        hashed_input = hashlib.sha256(password.encode()).hexdigest()
 
+        if hashed_input == user['password_hash']:
+            #senha correta
+            #cria um cookie pro navegador lembrar dele
+            response.set_cookie("user_id", str(user['id']), secret= "minha_chave_secreta")
+            return redirect('/') # manda pra home
+        
+    #se ta aqui eh pq errou email ou senha
+    return template('login', error = "Email ou senha incorretos.")
 
-    def delete_user(self, user_id):
-        self.user_service.delete_user(user_id)
-        self.redirect('/users')
+#ROTA DE LOGOUT
 
-
-user_routes = Bottle()
-user_controller = UserController(user_routes)
+@get('/logout')
+def logout():
+    #apaga o cookie do usuario
+    response.delete_cookie("user_id")
+    return redirect('/login')
+        
