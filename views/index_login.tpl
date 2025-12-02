@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="\static\css\style_login.css">
+    <link rel="stylesheet" href="static\css\style_login.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'rel='stylesheet'> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="\static\img\icone_cinescope.png" rel="stylesheet">
     <title>Login - CineScope</title>
 </head>
 <body>
     <main class="container">
         <form>
-            <h1>CineScope Login</h1>
-            <i class="fa-solid fa-film"></i>
+            <h1>
+                <img src="\static\img\icone_cinescope.png" alt="Logo CineScope" class="icone-img">
+                CineScope Login
+            </h1>
             <div class="input-box">
                 <input placeholder="Usuário" type="email">
                 <i class="bx bxs-user"></i>

@@ -107,3 +107,5 @@ Você pode reutilizar, modificar e compartilhar livremente.
 
 
 ###primeiro commit, index_login, style_login para o front da pagina de login da apolicação.
+
+##segundo commit do front end, atualizando pagina de login e adicionando a pagina de registro.
