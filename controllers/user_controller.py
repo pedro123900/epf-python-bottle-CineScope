@@ -63,14 +63,4 @@ def login_submit():
 def logout():
     response.delete_cookie("user_id")
     return redirect('/login')
-
-# ... (código anterior do login/logout) ...
-
-# --- ROTA DA HOME (Página Inicial) ---
-@user_routes.route('/', method='GET')
-def home():
-    # Verifica se está logado
-    if request.get_cookie("user_id", secret="minha_chave_secreta"):
-        return "<h1>Bem-vindo ao CineScope! Você está logado. <a href='/logout'>Sair</a></h1>"
-    else:
-        return "<h1>Olá visitante! <a href='/login'>Fazer Login</a> ou <a href='/register'>Criar Conta</a></h1>"
+    
