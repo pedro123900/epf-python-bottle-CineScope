@@ -2,14 +2,13 @@ from bottle import Bottle, request, redirect, response, template
 from models.user import User
 import hashlib
 
-# --- 1. CRIAMOS O OBJETO "user_routes" QUE O SISTEMA PROCURA ---
+# CRIA O OBJETO "user_routes" 
 user_routes = Bottle()
 
-# --- ROTA DE CADASTRO ---
-# Mudei de '/cadastro' para '/register' para bater com o seu HTML
+# ROTA DE CADASTRO 
 @user_routes.get('/register')
 def register_form():
-    # Aponta para o arquivo correto na pasta views (index_register.tpl)
+    # fui mais direto com o endereço (views)
     return template('views/index_register')
 
 @user_routes.post('/register')
@@ -27,11 +26,11 @@ def register_submit():
         # Retorna erro usando o template certo
         return template('views/index_register', error="Email já cadastrado!")
 
-# --- ROTA DE LOGIN ---
+# ROTA DE LOGIN
 
 @user_routes.get('/login')
 def login_form():
-    # Verifica cookie
+    # Verifica o cookie
     if request.get_cookie("user_id", secret="minha_chave_secreta"):
         return redirect('/')
     
@@ -46,7 +45,7 @@ def login_submit():
     user = User.find_by_email(email)
 
     if user:
-        # Criptografa a senha recebida para comparar
+        # criptografa a senha colocada pra comparar com a original
         hashed_input = hashlib.sha256(password.encode()).hexdigest()
 
         if hashed_input == user['password_hash']:
@@ -54,13 +53,20 @@ def login_submit():
             response.set_cookie("user_id", str(user['id']), secret="minha_chave_secreta")
             return redirect('/') 
         
-    # Se falhar
+    # Se der erro
     return template('views/index_login', error="Email ou senha incorretos.")
 
-# --- ROTA DE LOGOUT ---
+#ROTA DE LOGOUT
 
 @user_routes.get('/logout')
 def logout():
     response.delete_cookie("user_id")
     return redirect('/login')
     
+
+#ROTA RAIZ (HOME)
+
+@user_routes.get('/')
+def home():
+    #se ele entrar direto em localhost vai pro login
+    return redirect('/login')

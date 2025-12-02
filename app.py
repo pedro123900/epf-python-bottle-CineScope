@@ -1,4 +1,4 @@
-from bottle import Bottle, static_file # Importante: static_file tem que estar aqui
+from bottle import Bottle, static_file # Importante static_file tem que estar aqui
 from config import Config
 
 class App:
@@ -7,16 +7,15 @@ class App:
         self.config = Config()
 
     def setup_routes(self):
-        # 1. Importa e inicializa os controllers (Login, Cadastro, etc)
+        # importa e inicializa os controllers (Login, Cadastro, etc)
         from controllers import init_controllers
         print('🚀 Inicializa rotas de Usuário...')
         init_controllers(self.bottle)
 
-        # 2. --- ROTA MÁGICA DE ARQUIVOS ESTÁTICOS (CSS/IMG) ---
-        # Essa é a parte que estava faltando ou não estava sendo lida!
+        # ROTA DE ARQUIVOS ESTÁTICOS (CSS/IMG) 
         @self.bottle.route('/static/<filepath:path>')
         def server_static(filepath):
-            # O './static' garante que ele procure na pasta static da raiz
+            # O './static' faz com que que ele procure na pasta static da raiz
             return static_file(filepath, root='./static')
 
     def run(self):
