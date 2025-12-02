@@ -1,83 +1,68 @@
-import json
-import os
-from dataclasses import dataclass, asdict
-from typing import List
+import sqlite3
+import hashlib
+from data.database import get_connection
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 
 class User:
-    def __init__(self, id, name, email, birthdate):
+    def __init__(self, id, username, email, password_hash, role='regular'):
         self.id = id
-        self.name = name
+        self.username = username
         self.email = email
-        self.birthdate = birthdate
+        self.password_hash = password_hash
+        self.role = role
 
+    @staticmethod
+    def create(username, email, password):
+        #cria um novo usuario do banco de dados, retorna True se der certo, e False se o email ja existir
 
-    def __repr__(self):
-        return (f"User(id={self.id}, name='{self.name}', email='{self.email}', "
-                f"birthdate='{self.birthdate}'")
+        #1- criptografa a senha antes de salvar
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'email': self.email,
-            'birthdate': self.birthdate
-        }
+        #tratamento de erro
+        try:
+            cursor.execute('''
+                INSERT INTO user (username, email, password_hash)
+                VALUES (?, ?, ?)
+            ''', (username, email, hashed_password))
 
+            conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            #Erro, o email ja existe no banco
+            return False
+        finally:
+            conn.close()
+            
+    @staticmethod
+    def find_by_email(email):
+        #busca um usuario pelo email(para login) e retorna os dados do usuario ou None se nao achar
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    @classmethod
-    def from_dict(cls, data):
-        return cls(
-            id=data['id'],
-            name=data['name'],
-            email=data['email'],
-            birthdate=data['birthdate']
-        )
+        cursor.execute('SELECT *  FROM user WHERE email = ?', (email,))
+        user_data = cursor.fetchone()
 
+        conn.close()
 
-class UserModel:
-    FILE_PATH = os.path.join(DATA_DIR, 'users.json')
+        if user_data:
+            return user_data
+        else:
+            return None
+    
+    @staticmethod
+    def find_by_id(user_id):
+        #Busca pelo ID( util se o usuario ja tiver logado)
 
-    def __init__(self):
-        self.users = self._load()
+        conn = get_connection()
+        cursor = conn.cursor()
 
+        cursor.execute('SELECT * FROM user WHERE id = ?', (user_id))
+        user = cursor.fetchone()
 
-    def _load(self):
-        if not os.path.exists(self.FILE_PATH):
-            return []
-        with open(self.FILE_PATH, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return [User(**item) for item in data]
+        conn.close()
+        return user
 
-
-    def _save(self):
-        with open(self.FILE_PATH, 'w', encoding='utf-8') as f:
-            json.dump([u.to_dict() for u in self.users], f, indent=4, ensure_ascii=False)
-
-
-    def get_all(self):
-        return self.users
-
-
-    def get_by_id(self, user_id: int):
-        return next((u for u in self.users if u.id == user_id), None)
-
-
-    def add_user(self, user: User):
-        self.users.append(user)
-        self._save()
-
-
-    def update_user(self, updated_user: User):
-        for i, user in enumerate(self.users):
-            if user.id == updated_user.id:
-                self.users[i] = updated_user
-                self._save()
-                break
-
-
-    def delete_user(self, user_id: int):
-        self.users = [u for u in self.users if u.id != user_id]
-        self._save()
+            
