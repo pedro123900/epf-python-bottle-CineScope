@@ -1,85 +1,94 @@
-from bottle import Bottle, request, redirect, response, template
+from bottle import Bottle, request, redirect, template
 from models.film import Film
 from models.review import Review
 from models.user import User
 
-#cria o departamento de filmes
 film_routes = Bottle()
 
-#ROTA HOME / CATALOGO (lista para todos os filmes)
+# --- HELPER: Tradutor ---
+def to_vitin_film(film_obj):
+    return {
+        'id': film_obj.id,
+        'titulo': film_obj.title,
+        'diretor': film_obj.director,
+        'ano': film_obj.year,
+        'poster': film_obj.poster_image,
+        'imagem': film_obj.poster_image,
+        'sinopse': "Sinopse indisponível." 
+    }
+
+def to_vitin_review(review_obj):
+    return {
+        'usuario': review_obj.username,
+        'nota': review_obj.rating,
+        'comentario': review_obj.comment,
+        'data': review_obj.created_at
+    }
+
+# --- ROTA HOME ---
 @film_routes.get('/')
 def home():
-    #so entra se tiver o cookie user id
-    if not request.get_cookie("user_id", secret="minha_chave_secreta"):
-        return redirect('/login')
-    
-    #busca todos os filmes do banco e o model devolve uma lista de objetos FIlm
-    filmes = Film.find_all()
+    user_id = request.get_cookie("user_id", secret="minha_chave_secreta")
+    if not user_id: return redirect('/login')
 
-    #manda a lista pro HTML
-    return template('views/index_home', filmes=filmes)
+    filmes_objs = Film.find_all()
+    filmes_dict = [to_vitin_film(f) for f in filmes_objs]
 
-#ROTA DETALHES DO FILME + REVIEW
-@film_routes.get('/filmes/<film_id:int>')
-def film_details(film_id):
-    #seguranca
-    if not request.get_cookie("user_id", secret="minha_chave_secreta"):
-        return redirect('/login')
-    
-    #busca o filme pelo id
-    filme = Film.find_by_id(film_id)
-
-    #busca as reviews desse filme
-    reviews = Review.find_by_film_id(film_id)
-
-    #se o filme nao existir volta pra home
-    if not filme:
-        return redirect('/')
-    
-    return template('views/film_details', filme=filme, reviews=reviews)
-
-
-
-
-#ROTA da tela de add filmes
-@film_routes.get('/filmes/adicionar')
-def add_film_form():
-    if not request.get_cookie("user_id", secret="minha_chave_secreta"):
-        return redirect('/login')
-    
-    #pega os dados do usuario pra checar o admin
-    user = User.find_by_id(user_id)
-    
-    #verificaçõa de admin 
-    #se nao for admin joga ele pra home
-    if not user or user['role'] != 'admin':
-        return redirect('/')
-
-    return template('views/films_form')
-
-
-#ROTA processar a adição de filme
-@film_routes.post('/filmes/adicionar')
-def add_film_submit():
-    if not request.get_cookie("user_id", secret="minha_chave_secreta"):
-        return redirect('/login')
-    
-    #verifica se eh admin denovo
-    user = User.find_by_id
-    if not user or user['role'] != 'admin':
-        return redirect('/')
-
-    
-    #pega os dados do formulario 
-    title = request.forms.get('title')
-    director = request.forms.get('director')
-    year = request.forms.get('year')
-    poster_image = request.forms.get('poster_image')
-
-    #faz o model salvar
-    sucesso = Film.create(title, director, year, poster_image)
-
-    if sucesso:
-        return redirect('/')
+    if filmes_dict:
+        destaque = filmes_dict[0]
     else:
-        return template('views/films_form', error="Erro ao cadastrar filme!")
+        destaque = {
+            'id': 0, 'titulo': 'Bem-vindo', 'ano': '2025', 
+            'sinopse': 'Cadastre filmes!', 'imagem': '/static/img/background_placeholder.jpg'
+        }
+
+    return template('views/index_home', filmes=filmes_dict, destaque=destaque, user_id=user_id)
+
+# --- ROTA DETALHES (COM DEBUG) ---
+@film_routes.get('/filme/<film_id:int>')
+def film_details(film_id):
+    if not request.get_cookie("user_id", secret="minha_chave_secreta"):
+        return redirect('/login')
+
+    print(f"👀 TENTANDO ABRIR O FILME ID: {film_id}") # DEBUG
+
+    # Busca dados
+    filme_obj = Film.find_by_id(film_id)
+    
+    if not filme_obj:
+        print(f"❌ ERRO: O Model retornou Vazio (None) para o ID {film_id}") # DEBUG
+        return redirect('/')
+    
+    print(f"✅ SUCESSO: Filme encontrado: {filme_obj.title}") # DEBUG
+
+    reviews_objs = Review.find_by_film_id(film_id)
+    
+    # Traduz dados
+    filme_dict = to_vitin_film(filme_obj)
+    reviews_dict = [to_vitin_review(r) for r in reviews_objs]
+
+    return template('views/film_details', filme=filme_dict, reviews=reviews_dict)
+
+# ... (Mantenha as rotas de Admin iguais) ...
+@film_routes.get('/admin/filmes')
+def add_film_form():
+    user_id = request.get_cookie("user_id", secret="minha_chave_secreta")
+    if not user_id: return redirect('/login')
+    user = User.find_by_id(user_id)
+    if not user or user['role'] != 'admin': return redirect('/') 
+    return template('views/film_form')
+
+@film_routes.post('/admin/filmes')
+def add_film_submit():
+    user_id = request.get_cookie("user_id", secret="minha_chave_secreta")
+    if not user_id: return redirect('/login')
+    user = User.find_by_id(user_id)
+    if not user or user['role'] != 'admin': return redirect('/')
+
+    titulo = request.forms.get('titulo')
+    diretor = request.forms.get('diretor')
+    ano = request.forms.get('ano')
+    poster = request.forms.get('poster')
+    
+    Film.create(titulo, diretor, ano, poster)
+    return redirect('/')
