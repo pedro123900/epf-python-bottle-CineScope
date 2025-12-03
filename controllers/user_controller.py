@@ -66,7 +66,3 @@ def logout():
 
 #ROTA RAIZ (HOME)
 
-@user_routes.get('/')
-def home():
-    #se ele entrar direto em localhost vai pro login
-    return redirect('/login')
