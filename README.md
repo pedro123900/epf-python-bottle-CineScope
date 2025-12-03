@@ -1,111 +1,110 @@
-# Projeto Template: POO com Python + Bottle + JSON
+# CineScope - Plataforma de Avaliação de Filmes
 
-Este é um projeto de template educacional voltado para o ensino de **Programação Orientada a Objetos (POO)** do Prof. Lucas Boaventura, Universidade de Brasília (UnB).
+Projeto final da disciplina de Programação Orientada a Objetos (2025.2) - UnB (Prof. Lucas Boaventura).
 
-Utiliza o microframework **Bottle**. Ideal para uso em disciplinas introdutórias de Engenharia de Software ou Ciência da Computação.
-
-## 💡 Objetivo
-
-Fornecer uma base simples, extensível e didática para construção de aplicações web orientadas a objetos com aplicações WEB em Python, ideal para trabalhos finais ou exercícios práticos.
+O CineScope é uma aplicação web desenvolvida em Python que permite aos usuários catalogar, avaliar e comentar sobre filmes, aplicando na prática os conceitos de MVC, Persistência de Dados e Autenticação.
 
 ---
 
-## 🗂 Estrutura de Pastas
-
-```bash
-poo-python-bottle-template/
-├── app.py # Ponto de entrada do sistema
-├── config.py # Configurações e caminhos do projeto
-├── main.py # Inicialização da aplicação
-├── requirements.txt # Dependências do projeto
-├── README.md # Este arquivo
-├── controllers/ # Controladores e rotas
-├── models/ # Definição das entidades (ex: User)
-├── services/ # Lógica de persistência (JSON)
-├── views/ # Arquivos HTML (Bottle Templating)
-├── static/ # CSS, JS e imagens
-├── data/ # Arquivos JSON de dados
-└── .vscode/ # Configurações opcionais do VS Code
-```
-
+## Autores
+* **Pedro Victor Teixeira Silva - 241041204** - Backend, Banco de Dados & Arquitetura
+* **Vitor Eduardo Araújo - 241025720** - Frontend, UI Design & Integração
 
 ---
 
-## 📁 Descrição das Pastas
+## Funcionalidades Desenvolvidas
 
-### `controllers/`
-Contém as classes responsáveis por lidar com as rotas da aplicação. Exemplos:
-- `user_controller.py`: rotas para listagem, adição, edição e remoção de usuários.
-- `base_controller.py`: classe base com utilitários comuns.
+### Usuários (User)
+* **Autenticação:** Sistema de Cadastro e Login com criptografia de senha (SHA-256).
+* **Sessão:** Controle de acesso via Cookies assinados/seguros.
+* **Permissões:** Diferenciação entre usuários 'regular' e 'admin'.
 
-### `models/`
-Define as classes que representam os dados da aplicação. Exemplo:
-- `user.py`: classe `User`, com atributos como `id`, `name`, `email`, etc.
+### Filmes (Film)
+* **Catálogo:** Listagem dinâmica de filmes na página inicial.
+* **Detalhes:** Página exclusiva com informações do filme e poster.
+* **Admin:** Apenas administradores podem cadastrar novos filmes.
 
-### `services/`
-Responsável por salvar, carregar e manipular dados usando arquivos JSON. Exemplo:
-- `user_service.py`: contém métodos como `get_all`, `add_user`, `delete_user`.
-
-### `views/`
-Contém os arquivos `.tpl` utilizados pelo Bottle como páginas HTML:
-- `layout.tpl`: estrutura base com navegação e bloco `content`.
-- `users.tpl`: lista os usuários.
-- `user_form.tpl`: formulário para adicionar/editar usuário.
-
-### `static/`
-Arquivos estáticos como:
-- `css/style.css`: estilos básicos.
-- `js/main.js`: scripts JS opcionais.
-- `img/BottleLogo.png`: exemplo de imagem.
-
-### `data/`
-Armazena os arquivos `.json` que simulam o banco de dados:
-- `users.json`: onde os dados dos usuários são persistidos.
+### Avaliações (Review)
+* **Interação:** Usuários logados podem dar notas (1-5) e comentar.
+* **Relacionamento:** As reviews são vinculadas automaticamente ao Usuário e ao Filme (JOIN).
 
 ---
 
-## ▶️ Como Executar
+## Diagrama de Classes (UML)
 
-1. Crie o ambiente virtual na pasta fora do seu projeto:
-```bash
+Abaixo está a modelagem do sistema, ilustrando as classes User, Film e Review e seus relacionamentos (1:N).
+
+![Diagrama de Classes](static/img/diagrama_classe.png)
+
+---
+
+## Estrutura do Projeto
+
+A arquitetura segue o padrão MVC (Model-View-Controller):
+
+epf-python-bottle-CineScope/
+├── app.py              # Configuração da Aplicação e Rotas Estáticas
+├── main.py             # Arquivo principal para rodar o servidor
+├── config.py           # Configurações de ambiente (Debug, Porta)
+├── admin_tool.py       # Ferramenta CLI para promover usuários a Admin
+├── requirements.txt    # Dependências (Bottle, etc)
+├── controllers/        # CONTROLADORES (Gerentes de Rotas)
+│   ├── user_controller.py
+│   ├── film_controller.py
+│   └── review_controller.py
+├── models/             # MODELOS (Lógica de Dados e SQL)
+│   ├── user.py
+│   ├── film.py
+│   └── review.py
+├── views/              # VISÃO (Templates HTML .tpl)
+│   ├── index_home.tpl
+│   ├── index_login.tpl
+│   ├── film_details.tpl
+│   └── ...
+├── static/             # Arquivos Públicos
+│   ├── css/
+│   └── img/
+└── data/               # BANCO DE DADOS
+    ├── database.py     # Script de criação das tabelas
+    └── cinescope.db    # Arquivo do banco SQLite
+
+---
+
+## Como Executar
+
+### 1. Preparar o Ambiente
+Crie e ative o ambiente virtual (venv):
+
+# Windows
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\\Scripts\\activate     # Windows
-```
+.\venv\Scripts\activate
 
-2. Entre dentro do seu projeto criado a partir do template e instale as dependências:
-```bash
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
+
+### 2. Instalar Dependências
 pip install -r requirements.txt
-```
 
-3. Rode a aplicação:
-```bash
+### 3. Criar o Banco de Dados
+Execute o script que gera o arquivo cinescope.db e as tabelas:
+python data/database.py
+
+### 4. Rodar o Servidor
 python main.py
-```
 
-4. Accese sua aplicação no navegador em: [http://localhost:8080](http://localhost:8080)
-
----
-
-## ✍️ Personalização
-Para adicionar novos modelos (ex: Atividades):
-
-1. Crie a classe no diretório **models/**.
-
-2. Crie o service correspondente para manipulação do JSON.
-
-3. Crie o controller com as rotas.
-
-4. Crie as views .tpl associadas.
+Acesse no navegador: http://localhost:8080
 
 ---
 
-## 🧠 Autor e Licença
-Projeto desenvolvido como template didático para disciplinas de Programação Orientada a Objetos, baseado no [BMVC](https://github.com/hgmachine/bmvc_start_from_this).
-Você pode reutilizar, modificar e compartilhar livremente.
+## Como virar Admin
+Para testar o cadastro de filmes, você precisa de permissão de administrador.
+1. Cadastre-se no site normalmente.
+2. Pare o servidor e rode o script de ferramenta:
+python admin_tool.py
+3. Escolha o ID do seu usuário para promovê-lo.
 
+---
 
-
-###primeiro commit, index_login, style_login para o front da pagina de login da apolicação.
-
-##segundo commit do front end, atualizando pagina de login e adicionando a pagina de registro.
+## Licença
+Projeto acadêmico baseado no template do professor Lucas Boaventura, modificado para uso de SQLite e arquitetura modular de rotas.

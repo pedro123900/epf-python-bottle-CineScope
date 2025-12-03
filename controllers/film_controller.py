@@ -83,4 +83,3 @@ def add_film_submit():
         return redirect('/')
     else:
         return template('views/films_form', error="Erro ao cadastrar filme!")
-    
