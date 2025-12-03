@@ -55,12 +55,12 @@ class Review:
         reviews_list = []
         for row in reviews_data:
             reviews_list.append(Review(
-                id=row['id']
-                user_id=row['user_id']
-                film_id=row['film_id']
-                rating=row['rating']
-                comment=row['comment']
-                created_at=row['created_at']
+                id=row['id'],
+                user_id=row['user_id'],
+                film_id=row['film_id'],
+                rating=row['rating'],
+                comment=row['comment'],
+                created_at=row['created_at'],
                 username=row['username'] #preenche o nome aqui
             ))
         

@@ -49,11 +49,11 @@ class Film:
         for row in films_data:
             #converte cada linha do banco em objeto film
             film = Film(
-                id = row['id']
-                title= row['title']
-                director=row['director']
-                year=row['year']
-                poster_image=row['poster_image=']
+                id = row['id'],
+                title= row['title'],
+                director=row['director'],
+                year=row['year'],
+                poster_image=row['poster_image']
             )
             films_list.append(film)
         return films_list
@@ -74,10 +74,10 @@ class Film:
         
         if row:
             return Film(
-                id=row['id']
-                title=row['title']
-                director=row['director=']
-                year=row['year']
-                poster_image=row['poster_image=']
+                id=row['id'],
+                title=row['title'],
+                director=row['director'],
+                year=row['year'],
+                poster_image=row['poster_image']
             )
         return None
