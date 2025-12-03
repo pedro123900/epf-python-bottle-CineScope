@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background-color: #14181c; /* Cor de fundo escura estilo Letterboxd */
+    color: #fff;
+}
+
+/* --- NAVBAR (GLASSMORPHISM) --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    position: fixed; /* Fica fixo no topo ao rolar */
+    width: 100%;
+    z-index: 1000;
+    
+    /* O EFEITO DE VIDRO */
+    background: rgba(20, 24, 28, 0.6); /* Fundo semi-transparente */
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.logo img { height: 30px; }
+
+.menu a {
+    color: #9ab; /* Cor cinza azulado suave */
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+.menu a:hover { color: #fff; }
+
+.search-bar {
+    position: relative;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+}
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+    padding-left: 10px;
+}
+
+.user-actions a {
+    text-decoration: none;
+    color: #fff;
+    margin-left: 15px;
+    font-weight: 600;
+    font-size: 14px;
+}
+.btn-register {
+    background: #00e054; /* O verde do Letterboxd/Mockup */
+    padding: 8px 20px;
+    border-radius: 4px;
+    color: #14181c !important;
+}
+
+/* --- HERO SECTION --- */
+.hero {
+    height: 600px;
+    background-size: cover;
+    background-position: center top;
+    display: flex;
+    align-items: flex-end; /* Conteúdo no fundo */
+    padding-bottom: 80px;
+    margin-bottom: 40px;
+}
+
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 50px;
+}
+
+.hero h1 {
+    font-size: 50px;
+    font-family: 'Times New Roman', serif; /* Fonte serifada pro título estilo cinema */
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.hero .meta {
+    font-size: 16px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.synopsis {
+    max-width: 600px;
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 30px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+}
+
+.hero-buttons button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 14px;
+}
+.btn-watch { background: #fff; color: #000; }
+.btn-list { background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(5px); }
+
+/* --- CONTEÚDO PRINCIPAL --- */
+.content-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+.section-header h2 { font-size: 18px; text-transform: uppercase; font-weight: 400; color: #9ab; }
+.section-header a { color: #fff; text-decoration: none; font-size: 12px; }
+
+/* GRID DE FILMES */
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 filmes por linha */
+    gap: 15px;
+}
+
+.movie-card {
+    transition: transform 0.2s;
+}
+.movie-card:hover { transform: scale(1.05); border: 2px solid #00e054; }
+
+.poster {
+    width: 100%;
+    aspect-ratio: 2/3; /* Formato retrato padrão de poster */
+    background-color: #333;
+    background-size: cover;
+    background-position: center;
+    border-radius: 5px;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Hover effect nos posters */
+.poster .overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.poster:hover .overlay { opacity: 1; }
+.overlay i { font-size: 24px; color: #fff; }
+.overlay i:hover { color: #00e054; }
+
+
+/* LISTA DE REVIEWS (ESTILO GLASS) */
+.reviews-list {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+.review-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #9ab;
+}
+.stars { color: #00e054; margin-left: auto; }
+.review-card small { display: block; margin-top: 15px; color: #555; font-size: 12px; }
+
+footer {
+    text-align: center;
+    padding: 40px;
+    color: #555;
+    font-size: 12px;
+}
+/* Ajuste Responsivo para o Modal de Detalhes */
+@media (max-width: 768px) {
+    .modal-content.solid-background {
+        flex-direction: column; /* Em celular, empilha um embaixo do outro */
+        align-items: center;
+        text-align: center !important;
+    }
+    .modal-poster img {
+        width: 150px !important; /* Diminui o poster no celular */
+        margin-bottom: 20px;
+    }
+}
+/* --- ESTILO DOS MODAIS (Pop-ups) --- */
+
+/* O Fundo Escuro (Overlay) */
+.modal-overlay {
+    display: none; /* REGRA DE OURO: Começa invisível! */
+    position: fixed; /* Fixa na tela inteira, ignorando a rolagem */
+    z-index: 2000; /* Garante que fique em cima de tudo */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo preto transparente */
+    
+    /* Centralização Mágica (Flexbox) */
+    justify-content: center; 
+    align-items: center;
+    
+    backdrop-filter: blur(5px); /* Borra o fundo */
+}
+
+/* O Cartão do Modal (Conteúdo) */
+.modal-content.solid-background {
+    background-color: #1f2429;
+    border-radius: 15px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    border: 1px solid #333;
+    position: relative;
+    
+    /* Animação ao abrir */
+    animation: zoomIn 0.3s ease;
+}
+
+/* Botão de Fechar (X) */
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.close-modal:hover { color: #fff; }
+
+/* Animação de Zoom suave */
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* --- AVALIAÇÃO POR ESTRELAS --- */
+.star-rating {
+    display: flex;
+    gap: 10px; /* Espaço entre as estrelas */
+    margin-bottom: 10px;
+    justify-content: center; /* Centraliza */
+}
+
+.star-rating i {
+    font-size: 30px;
+    cursor: pointer;
+    color: #444; /* Cor da estrela apagada */
+    transition: color 0.2s;
+}
+
+.star-rating i:hover {
+    color: #ffe600; /* Dourado ao passar o mouse */
+    transform: scale(1.1);
+}
+
+/* Quando a estrela (e as anteriores) forem selecionadas */
+.star-rating i.selected {
+    color: #ffbf00; /* Dourado forte */
+}

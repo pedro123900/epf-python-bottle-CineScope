@@ -40,7 +40,6 @@
             <button type="submit">Registrar-me</button>
 
             <div class="login-link">
-                <!--Configurar rota para a pagina de login!!-->
                 <p>Já possui uma conta?</p><a href="/login">Clique aqui!</a>
             </div>
         </form>

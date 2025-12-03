@@ -5,3 +5,7 @@ __pycache__/
 *.db
 .env
 .git/
+venv/venv/
+__pycache__/
+data/cinescope.db
+.vscode/
